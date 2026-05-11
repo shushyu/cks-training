@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>CKS Übungsaufgaben</title>
+<style>
+body{font-family:system-ui,sans-serif;max-width:980px;margin:20px auto;padding:0 16px;line-height:1.5;color:#222}
+h1{border-bottom:2px solid #333;padding-bottom:6px}
+h2{color:#1a4a8a;margin-top:32px}
+h3{color:#444;margin-top:18px}
+.meta{background:#f0f4f8;padding:6px 10px;border-radius:3px;font-size:0.9em;margin:8px 0}
+.task{background:#fffbea;border-left:3px solid #d69e2e;padding:8px 14px;margin:10px 0}
+pre{background:#1e1e1e;color:#e0e0e0;padding:10px 12px;border-radius:4px;overflow-x:auto;font-size:0.85em}
+code{background:#eee;padding:1px 4px;border-radius:2px;font-size:0.9em}
+pre code{background:transparent;padding:0}
+details{margin:10px 0;border:1px solid #ccc;border-radius:4px}
+details>summary{background:#f0f4f8;padding:8px 12px;cursor:pointer;font-weight:bold;user-select:none}
+details>summary:hover{background:#e0e8f0}
+details[open]>summary{background:#dde6ef;border-bottom:1px solid #ccc}
+details>div{padding:10px 14px}
+.expl{background:#f7f7f7;border-left:3px solid #888}
+.expl>summary{background:#eaeaea}
+.toc{background:#f5f5f5;padding:12px 20px;border-radius:4px;margin:20px 0}
+.toc a{text-decoration:none;color:#1a4a8a}
+.toc a:hover{text-decoration:underline}
+.controls{margin:10px 0;padding:8px;background:#eef;border-radius:3px;font-size:0.9em}
+.controls button{margin-right:8px;padding:4px 10px;cursor:pointer}
+hr{border:0;border-top:1px solid #ddd;margin:30px 0}
+</style>
+</head>
+<body>
+<div class="controls">
+<button onclick="document.querySelectorAll('details').forEach(d=>d.open=true)">Alle aufklappen</button>
+<button onclick="document.querySelectorAll('details').forEach(d=>d.open=false)">Alle zuklappen</button>
+</div>
+
+
+<h1>CKS 2026 – Eigene Übungsaufgaben nach Domänen</h1>
+<p>Aufgaben zum Üben, basierend auf den offiziellen CKS-Domänen-Anforderungen und den bisherigen 53 Übungsaufgaben.</p>
+<p><strong>Aufbau pro Aufgabe:</strong></p>
+<ul>
+<li>Aufgabenstellung (im Stil der echten Prüfung)</li>
+<li>Lösung</li>
+<li>Kurze Erklärung</li>
+</ul>
+<p>---</p>
+<h2>Inhaltsverzeichnis</h2>
+
+<h3>1. Cluster Setup (15%)</h3>
+<ul>
+<li><a href="#ü11">Ü1.1 NetworkPolicy: Frontend-Backend-Isolation</a></li>
+<li><a href="#ü12">Ü1.2 CIS Benchmark kube-bench auf Master</a></li>
+<li><a href="#ü13">Ü1.3 Ingress mit TLS für Microservice</a></li>
+<li><a href="#ü14">Ü1.4 Node Metadata Endpoint blockieren</a></li>
+<li><a href="#ü15">Ü1.5 kubeadm Binary Verification</a></li>
+</ul>
+<h3>2. Cluster Hardening (15%)</h3>
+<ul>
+<li><a href="#ü21">Ü2.1 RBAC: Minimale Permissions für CI-Bot</a></li>
+<li><a href="#ü22">Ü2.2 Service Account ohne Default-Token</a></li>
+<li><a href="#ü23">Ü2.3 API Server: Anonyme Auth deaktivieren</a></li>
+<li><a href="#ü24">Ü2.4 Kubernetes Worker-Node Upgrade</a></li>
+</ul>
+<h3>3. System Hardening (10%)</h3>
+<ul>
+<li><a href="#ü31">Ü3.1 Custom AppArmor Profile mit Netzwerk-Beschränkung</a></li>
+<li><a href="#ü32">Ü3.2 Seccomp RuntimeDefault enforcen</a></li>
+<li><a href="#ü33">Ü3.3 Unbenötigte Linux-Pakete auf Node identifizieren</a></li>
+</ul>
+<h3>4. Minimize Microservice Vulnerabilities (20%)</h3>
+<ul>
+<li><a href="#ü41">Ü4.1 PSS baseline Namespace einrichten</a></li>
+<li><a href="#ü42">Ü4.2 Secret mit Encryption-at-Rest verifizieren</a></li>
+<li><a href="#ü43">Ü4.3 gVisor RuntimeClass + Pod Migration</a></li>
+<li><a href="#ü44">Ü4.4 Cilium L7 Policy: HTTP-Methoden beschränken</a></li>
+<li><a href="#ü45">Ü4.5 mTLS via Cilium für sensible Services</a></li>
+</ul>
+<h3>5. Supply Chain Security (20%)</h3>
+<ul>
+<li><a href="#ü51">Ü5.1 Distroless Image Migration</a></li>
+<li><a href="#ü52">Ü5.2 Trivy mit Ignore-Liste</a></li>
+<li><a href="#ü53">Ü5.3 ImagePolicyWebhook für vertrauenswürdige Registry</a></li>
+<li><a href="#ü54">Ü5.4 Cosign Image-Signatur verifizieren</a></li>
+<li><a href="#ü55">Ü5.5 Kubesec Static Analysis im CI</a></li>
+</ul>
+<h3>6. Monitoring, Logging, Runtime Security (20%)</h3>
+<ul>
+<li><a href="#ü61">Ü6.1 Falco Rule: Crypto-Miner Detection</a></li>
+<li><a href="#ü62">Ü6.2 Audit Policy mit unterschiedlichen Levels</a></li>
+<li><a href="#ü63">Ü6.3 Falco-Alerts nach Severity filtern</a></li>
+<li><a href="#ü64">Ü6.4 Container Immutability für mehrere Deployments</a></li>
+<li><a href="#ü65">Ü6.5 Pods mit privilegierten Mounts identifizieren</a></li>
+</ul>
+<p>---</p>
+<h1>1. CLUSTER SETUP (15%)</h1>
+
+<h2 id="ü11">Ü1.1 – NetworkPolicy: Frontend-Backend-Isolation</h2>
+<div class="meta"><strong>Instance:</strong> <code>ssh cks-prep1</code> | <strong>Namespace:</strong> <code>webshop</code> | <strong>Konzept:</strong> NetworkPolicies</div>
+<div class="task"><p>Das Webshop-Team hat einen 3-Tier-Stack im <code>webshop</code> Namespace. Die Pods haben folgende Labels:</p>
+<ul>
+<li><code>tier=frontend</code> (3 Pods, Port 80)</li>
+<li><code>tier=backend</code> (2 Pods, Port 8080)</li>
+<li><code>tier=database</code> (1 Pod, Port 5432)</li>
+</ul>
+<p>Implementiere folgendes Sicherheitsmodell auf Cluster <code>cks-prep1</code>:</p>
+<ol>
+<li>Default-Deny aller Ingress in <code>webshop</code></li>
+<li>NetworkPolicy <code>allow-fe-to-be</code>: Frontend darf Backend auf Port 8080 erreichen</li>
+<li>NetworkPolicy <code>allow-be-to-db</code>: Backend darf Database auf Port 5432 erreichen</li>
+<li>Frontend darf Database NIEMALS direkt erreichen</li>
+<li>Alle Pods dürfen DNS auflösen (UDP 53)</li>
+<li>Frontend darf zusätzlich Ingress von außerhalb empfangen (alle Quellen) auf Port 80</li>
+</ol></div>
+<details><summary>Lösung anzeigen</summary><div><pre><code>kubectl create namespace webshop --dry-run=client -o yaml | kubectl apply -f -</code></pre>
+<p><strong><code>default-deny-ingress.yaml</code>:</strong></p>
+<pre><code>apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: webshop
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress</code></pre>
+<p><strong><code>allow-fe-to-be.yaml</code>:</strong></p>
+<pre><code>apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-fe-to-be
+  namespace: webshop
+spec:
+  podSelector:
+    matchLabels:
+      tier: backend
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          tier: frontend
+    ports:
+    - protocol: TCP
+      port: 8080</code></pre>
+<p><strong><code>allow-be-to-db.yaml</code>:</strong></p>
+<pre><code>apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-be-to-db
+  namespace: webshop
+spec:
+  podSelector:
+    matchLabels:
+      tier: database
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          tier: backend
+    ports:
+    - protocol: TCP
+      port: 5432</code></pre>
+<p><strong><code>allow-dns-egress.yaml</code>:</strong></p>
+<pre><code>apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns-egress
+  namespace: webshop
+spec:
+  podSelector: {}
+  policyTypes:
+  - Egress
+  egress:
+  - ports:
+    - protocol: UDP
+      port: 53</code></pre>
+<p><strong><code>allow-public-to-fe.yaml</code>:</strong></p>
+<pre><code>apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-public-to-fe
+  namespace: webshop
+spec:
+  podSelector:
+    matchLabels:
+      tier: frontend
+  policyTypes:
+  - Ingress
+  ingress:
+  - ports:
+    - protocol: TCP
+      port: 80</code></pre>
+<pre><code>kubectl apply -f default-deny-ingress.yaml
+kubectl apply -f allow-fe-to-be.yaml
+kubectl apply -f allow-be-to-db.yaml
+kubectl apply -f allow-dns-egress.yaml
+kubectl apply -f allow-public-to-fe.yaml
+
+kubectl get networkpolicy -n webshop</code></pre></div></details>
+<details class="expl"><summary>Erklärung anzeigen</summary><div><p>Klassisches Three-Tier-Pattern: Frontend → Backend → Database. NetworkPolicies sind additiv – jede <code>allow</code>-Policy fügt erlaubte Verbindungen zu der ansonsten gesperrten Liste hinzu. Frontend → Database scheitert automatisch, weil keine Policy diesen Pfad erlaubt. DNS bleibt im Egress immer offen, sonst funktioniert keine Service-Auflösung.</p>
+<p>---</p></div></details>
+<h2 id="ü12">Ü1.2 – CIS Benchmark kube-bench auf Master</h2>
+<div class="meta"><strong>Instance:</strong> <code>ssh cks-prep2</code> | <strong>Namespace:</strong> <code>default</code> | <strong>Konzept:</strong> CIS Benchmark</div>
+<div class="task"><p>Die Compliance-Abteilung verlangt einen Master-Komponenten-Scan vor dem Audit. Auf Node <code>cks-prep2</code>:</p>
+<ol>
+<li><code>kube-bench</code> gegen <code>master</code> Komponenten ausführen, vollen Output nach <code>/opt/compliance/master-bench.txt</code></li>
+<li>Aus dem Output alle FAIL-Findings extrahieren nach <code>/opt/compliance/master-fails.txt</code></li>
+<li>Die Anzahl der FAIL-Findings zählen und in <code>/opt/compliance/fail-count.txt</code> schreiben (nur die Zahl)</li>
+</ol></div>
+<details><summary>Lösung anzeigen</summary><div><pre><code>mkdir -p /opt/compliance
+
+# 1) Full Scan
+sudo kube-bench run --targets master \
+  &gt; /opt/compliance/master-bench.txt
+
+# 2) Nur FAIL-Zeilen
+grep &quot;^\[FAIL\]&quot; /opt/compliance/master-bench.txt \
+  &gt; /opt/compliance/master-fails.txt
+
+# 3) Anzahl
+wc -l &lt; /opt/compliance/master-fails.txt \
+  | tr -d &#x27; &#x27; \
+  &gt; /opt/compliance/fail-count.txt
+
+# Verifikation
+cat /opt/compliance/fail-count.txt</code></pre></div></details>
+<details class="expl"><summary>Erklärung anzeigen</summary><div><p><code>kube-bench</code> läuft mit <code>--targets master|node|etcd|policies</code> für unterschiedliche Komponenten. Die Output-Zeilen beginnen mit <code>[PASS]</code>, <code>[FAIL]</code>, <code>[WARN]</code> oder <code>[INFO]</code>. Mit <code>grep</code> nach diesen Markern filtern, mit <code>wc -l</code> zählen. <code>tr -d &#x27; &#x27;</code> entfernt das Leerzeichen, das <code>wc</code> standardmäßig vor die Zahl setzt.</p>
+<p>---</p></div></details>
+<h2 id="ü13">Ü1.3 – Ingress mit TLS für Microservice</h2>
+<div class="meta"><strong>Instance:</strong> <code>ssh cks-prep1</code> | <strong>Namespace:</strong> <code>api-gateway</code> | <strong>Konzept:</strong> Ingress TLS</div>
+<div class="task"><p>Erstelle in einem Schritt einen vollständigen TLS-Ingress für eine API auf Cluster <code>cks-prep1</code>:</p>
+<ol>
+<li>Namespace <code>api-gateway</code></li>
+<li>Self-signed Cert für Host <code>api.example.io</code>, gültig 730 Tage, RSA 4096 Bit</li>
+<p>- Cert: <code>/opt/certs/api.crt</code>    - Key: <code>/opt/certs/api.key</code></p>
+<li>TLS-Secret <code>api-tls</code> in <code>api-gateway</code> aus Cert+Key</li>
+<li>Service <code>api-svc</code> (ClusterIP) targetiert Label <code>app=api-backend</code> auf Port 8080</li>
+<li>Pod <code>api-backend</code> (Image <code>nginx:1.25</code>, Label <code>app=api-backend</code>, Port 8080)</li>
+<li>Ingress <code>api-ingress</code> in <code>api-gateway</code>:</li>
+<p>- Host <code>api.example.io</code>    - Pfad <code>/v1</code> mit pathType <code>Prefix</code> → <code>api-svc:8080</code>    - TLS mit Secret <code>api-tls</code></p>
+</ol></div>
+<details><summary>Lösung anzeigen</summary><div><pre><code>kubectl create namespace api-gateway --dry-run=client -o yaml | kubectl apply -f -
+mkdir -p /opt/certs
+
+# 1) Cert + Key
+openssl req -x509 -nodes -newkey rsa:4096 -days 730 \
+  -keyout /opt/certs/api.key \
+  -out /opt/certs/api.crt \
+  -subj &quot;/CN=api.example.io/O=Example&quot;
+
+# 2) TLS Secret
+kubectl create secret tls api-tls \
+  --cert=/opt/certs/api.crt \
+  --key=/opt/certs/api.key \
+  -n api-gateway
+
+# 3) Pod
+kubectl run api-backend \
+  --image=nginx:1.25 \
+  --labels=app=api-backend \
+  --port=8080 \
+  -n api-gateway
+
+# 4) Service
+kubectl expose pod api-backend \
+  --name=api-svc \
+  --port=8080 --target-port=8080 \
+  -n api-gateway</code></pre>
+<p><strong><code>api-ingress.yaml</code>:</strong></p>
+<pre><code>apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-ingress
+  namespace: api-gateway
+spec:
+  tls:
+  - hosts:
+    - api.example.io
+    secretName: api-tls
+  rules:
+  - host: api.example.io
+    http:
+      paths:
+      - path: /v1
+        pathType: Prefix
+        backend:
+          service:
+            name: api-svc
+            port:
+              number: 8080</code></pre>
+<pre><code>kubectl apply -f api-ingress.yaml
+kubectl get ingress -n api-gateway</code></pre></div></details>
+<details class="expl"><summary>Erklärung anzeigen</summary><div><p>Komplett-Setup eines TLS-Ingress: openssl erzeugt Cert+Key (<code>-x509</code> = self-signed, <code>-nodes</code> = kein Passwort), <code>kubectl create secret tls</code> packt beides in ein TLS-Secret (Typ <code>kubernetes.io/tls</code>). Im Ingress-Manifest referenziert <code>tls.secretName</code> das Secret. Die <code>hosts</code>-Liste muss exakt zum <code>rules[].host</code> passen.</p>
+<p>---</p></div></details>
+<h2 id="ü14">Ü1.4 – Node Metadata Endpoint blockieren</h2>
+<div class="meta"><strong>Instance:</strong> <code>ssh cks-prep1</code> | <strong>Namespace:</strong> <code>app-runtime</code> | <strong>Konzept:</strong> Node Metadata Protection</div>
+<div class="task"><p>Pentest hat ergeben, dass Pods im <code>app-runtime</code> Namespace den Cloud-Metadata-Service <code>169.254.169.254</code> erreichen können. Sofortige Remediation:</p>
+<ol>
+<li>Namespace <code>app-runtime</code></li>
+<li>NetworkPolicy <code>block-cloud-metadata</code>:</li>
+<p>- Greift auf alle Pods im Namespace    - Egress erlaubt zu <code>10.0.0.0/8</code>, <code>172.16.0.0/12</code>, <code>192.168.0.0/16</code> (interne Netze)    - Egress erlaubt zu <code>0.0.0.0/0</code> AUSSER <code>169.254.169.254/32</code>    - Egress erlaubt für DNS (UDP 53 + TCP 53)</p>
+</ol></div>
+<details><summary>Lösung anzeigen</summary><div><pre><code>kubectl create namespace app-runtime --dry-run=client -o yaml | kubectl apply -f -</code></pre>
+<p><strong><code>block-cloud-metadata.yaml</code>:</strong></p>
+<pre><code>apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: block-cloud-metadata
+  namespace: app-runtime
+spec:
+  podSelector: {}
+  policyTypes:
+  - Egress
+  egress:
+  # DNS
+  - ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
+  # Alle IPs außer Metadata-Endpoint
+  - to:
+    - ipBlock:
+        cidr: 0.0.0.0/0
+        except:
+        - 169.254.169.254/32</code></pre>
+<pre><code>kubectl apply -f block-cloud-metadata.yaml
+
+# Verifikation mit Test-Pod
+kubectl run test --image=nginxinc/nginx-unprivileged:1.25 -n app-runtime
+sleep 5
+
+kubectl exec -n app-runtime test -- curl -m 3 http://169.254.169.254/ 2&gt;&amp;1
+# Timeout
+
+kubectl exec -n app-runtime test -- nslookup kubernetes.default
+# Funktioniert</code></pre></div></details>
+<details class="expl"><summary>Erklärung anzeigen</summary><div><p><code>except</code> innerhalb von <code>ipBlock</code> ist die einzige Möglichkeit, eine IP aus einem größeren CIDR auszuschließen. Ohne <code>0.0.0.0/0</code> würde die Policy gar nichts erlauben, sondern nur die Metadata-IP blockieren. DNS muss separat erlaubt sein, da <code>except</code> keine Port-Filter unterstützt.</p>
+<p>---</p></div></details>
+<h2 id="ü15">Ü1.5 – kubeadm Binary Verification</h2>
+<div class="meta"><strong>Instance:</strong> <code>ssh cks-prep2</code> | <strong>Namespace:</strong> <code>default</code> | <strong>Konzept:</strong> Binary Verification</div>
+<div class="task"><p>Vor Cluster-Upgrade soll die kubeadm-Binary <code>v1.32.0</code> verifiziert werden. Auf Node <code>cks-prep2</code>:</p>
+<ol>
+<li>kubeadm v1.32.0 für linux/amd64 nach <code>/opt/upgrade/kubeadm</code> herunterladen</li>
+<li>SHA512-Checksum-Datei nach <code>/opt/upgrade/kubeadm.sha512</code></li>
+<li>Verifizieren mit <code>sha512sum --check</code>, Ergebnis (<code>OK</code> oder <code>FAILED</code>) nach <code>/opt/upgrade/result.txt</code></li>
+<li>Wenn Verifikation OK: Datei executable machen und nach <code>/usr/local/bin/kubeadm-new</code> kopieren</li>
+<li>Wenn Verifikation FAILED: kubeadm-Binary aus <code>/opt/upgrade/</code> löschen</li>
+</ol></div>
+<details><summary>Lösung anzeigen</summary><div><pre><code>mkdir -p /opt/upgrade
+cd /opt/upgrade
+
+# 1) Binary
+curl -L -o kubeadm \
+  &quot;https://dl.k8s.io/release/v1.32.0/bin/linux/amd64/kubeadm&quot;
+
+# 2) Checksum
+curl -L -o kubeadm.sha512 \
+  &quot;https://dl.k8s.io/release/v1.32.0/bin/linux/amd64/kubeadm.sha512&quot;
+
+# 3) Verify
+if echo &quot;$(cat kubeadm.sha512)  kubeadm&quot; | sha512sum --check &amp;&gt; /dev/null; then
+  echo &quot;OK&quot; &gt; /opt/upgrade/result.txt
+  # 4a) OK-Pfad
+  chmod +x /opt/upgrade/kubeadm
+  sudo cp /opt/upgrade/kubeadm /usr/local/bin/kubeadm-new
+else
+  echo &quot;FAILED&quot; &gt; /opt/upgrade/result.txt
+  # 4b) FAILED-Pfad
+  rm /opt/upgrade/kubeadm
+fi
+
+cat /opt/upgrade/result.txt
+ls -la /opt/upgrade/ /usr/local/bin/kubeadm-new 2&gt;/dev/null</code></pre></div></details>
+<details class="expl"><summary>Erklärung anzeigen</summary><div><p><code>sha512sum --check</code> erwartet das Format <code>&lt;hash&gt;  &lt;filename&gt;</code>. Die SHA-Datei von Kubernetes enthält nur den Hash, daher per <code>echo</code> die Filename-Spalte ergänzen. Exit-Code 0 = Verifikation erfolgreich. Bedingte Aktionen mit if/else je nach Ergebnis. Wichtig: Pfad-Konventionen einhalten (<code>/usr/local/bin/kubeadm-new</code> exakt wie verlangt).</p>
+<p>---</p></div></details>
+<h1>2. CLUSTER HARDENING (15%)</h1>
+
+<h2 id="ü21">Ü2.1 – RBAC: Minimale Permissions für CI-Bot</h2>
+<div class="meta"><strong>Instance:</strong> <code>ssh cks-prep1</code> | <strong>Namespace:</strong> <code>staging</code> | <strong>Konzept:</strong> RBAC, Least Privilege</div>
+<div class="task"><p>Ein CI/CD-Bot soll im <code>staging</code> Namespace deployen können – aber nur Deployments und ConfigMaps, nichts anderes. Auf Cluster <code>cks-prep1</code>:</p>
+<ol>
+<li>Namespace <code>staging</code></li>
+<li>ServiceAccount <code>ci-bot</code> in <code>staging</code></li>
+<li>Role <code>deployer</code> in <code>staging</code>:</li>
+<p>- <code>deployments.apps</code>: <code>get, list, create, update, patch, delete</code>    - <code>configmaps</code>: <code>get, list, create, update, patch</code>    - <strong>NICHT erlaubt:</strong> secrets, pods, services, replicasets, alles andere</p>
+<li>RoleBinding <code>ci-bot-deployer</code> bindet <code>deployer</code> an SA <code>ci-bot</code></li>
+<li>Mit <code>kubectl auth can-i</code> verifizieren:</li>
+<p>- <code>create deployments</code> → ja    - <code>create secrets</code> → nein    - <code>delete configmaps</code> → nein</p>
+</ol>
+<p>Ergebnisse:</p>
+<ul>
+<li><code>kubectl auth can-i create deployments ...</code> → <code>/opt/audit/can-create-deploy.txt</code></li>
+<li><code>kubectl auth can-i create secrets ...</code> → <code>/opt/audit/can-create-secrets.txt</code></li>
+<li><code>kubectl auth can-i delete configmaps ...</code> → <code>/opt/audit/can-delete-cm.txt</code></li>
+</ul></div>
+<details><summary>Lösung anzeigen</summary><div><pre><code>mkdir -p /opt/audit
+kubectl create namespace staging --dry-run=client -o yaml | kubectl apply -f -
+kubectl create serviceaccount ci-bot -n staging</code></pre>
+<p><strong><code>deployer-role.yaml</code>:</strong></p>
+<pre><code>apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: deployer
+  namespace: staging
+rules:
+- apiGroups: [&quot;apps&quot;]
+  resources: [&quot;deployments&quot;]
+  verbs: [&quot;get&quot;, &quot;list&quot;, &quot;create&quot;, &quot;update&quot;, &quot;patch&quot;, &quot;delete&quot;]
+- apiGroups: [&quot;&quot;]
+  resources: [&quot;configmaps&quot;]
+  verbs: [&quot;get&quot;, &quot;list&quot;, &quot;create&quot;, &quot;update&quot;, &quot;patch&quot;]</code></pre>
+<pre><code>kubectl apply -f deployer-role.yaml
+
+kubectl create rolebinding ci-bot-deployer \
+  --role=deployer \
+  --serviceaccount=staging:ci-bot \
+  -n staging
+
+# Verifikation
+SA=&quot;system:serviceaccount:staging:ci-bot&quot;
+
+kubectl auth can-i create deployments \
+  --as=$SA -n staging &gt; /opt/audit/can-create-deploy.txt
+
+kubectl auth can-i create secrets \
+  --as=$SA -n staging &gt; /opt/audit/can-create-secrets.txt
+
+kubectl auth can-i delete configmaps \
+  --as=$SA -n staging &gt; /opt/audit/can-delete-cm.txt
+
+cat /opt/audit/*.txt</code></pre></div></details>
+<details class="expl"><summary>Erklärung anzeigen</summary><div><p>Imperativ via <code>kubectl create role</code> geht für simple Fälle, aber bei mehreren <code>apiGroups</code> muss man YAML schreiben. <code>deployments</code> gehört zur API-Group <code>apps</code>, <code>configmaps</code> zur Core-Group <code>&quot;&quot;</code>. <code>kubectl auth can-i</code> mit <code>--as=system:serviceaccount:&lt;ns&gt;:&lt;name&gt;</code> simuliert RBAC-Checks aus Sicht eines anderen Subjects.</p>
+<p>---</p></div></details>
+<h2 id="ü22">Ü2.2 – Service Account ohne Default-Token</h2>
+<div class="meta"><strong>Instance:</strong> <code>ssh cks-prep1</code> | <strong>Namespace:</strong> <code>monitoring</code> | <strong>Konzept:</strong> Service Accounts</div>
+<div class="task"><p>Im <code>monitoring</code> Namespace existieren 3 Deployments (<code>prometheus</code>, <code>grafana</code>, <code>alertmanager</code>), die alle den <code>default</code> ServiceAccount nutzen. Sicherheitsmaßnahme: Default-SA darf keine Tokens mehr auto-mounten:</p>
+<ol>
+<li>Den <code>default</code> ServiceAccount im Namespace <code>monitoring</code> so patchen, dass <code>automountServiceAccountToken: false</code> gesetzt ist</li>
+<li>Falls es noch keinen <code>monitoring</code>-Namespace gibt, erstellen</li>
+<li>Pod <code>verify-no-token</code> mit Image <code>nginxinc/nginx-unprivileged:1.25</code> in <code>monitoring</code> deployen (ohne explizite SA-Angabe)</li>
+<li>Verifizieren dass im Pod das Token-Verzeichnis NICHT existiert</li>
+<li>Ergebnis (<code>exists</code> oder <code>not-found</code>) nach <code>/opt/sa-check/result.txt</code></li>
+</ol></div>
+<details><summary>Lösung anzeigen</summary><div><pre><code>mkdir -p /opt/sa-check
+kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
+
+# Default-SA patchen
+kubectl patch serviceaccount default -n monitoring \
+  -p &#x27;{&quot;automountServiceAccountToken&quot;: false}&#x27;
+
+# Verifikation der Patch
+kubectl get serviceaccount default -n monitoring -o yaml | grep automount
+# automountServiceAccountToken: false
+
+# Test-Pod
+kubectl run verify-no-token \
+  --image=nginxinc/nginx-unprivileged:1.25 \
+  -n monitoring
+
+kubectl wait --for=condition=Ready pod/verify-no-token -n monitoring --timeout=60s
+
+# Check ob Token-Verzeichnis existiert
+if kubectl exec -n monitoring verify-no-token -- \
+   ls /var/run/secrets/kubernetes.io/serviceaccount 2&gt;/dev/null; then
+  echo &quot;exists&quot; &gt; /opt/sa-check/result.txt
+else
+  echo &quot;not-found&quot; &gt; /opt/sa-check/result.txt
+fi
+
+cat /opt/sa-check/result.txt
+# not-found</code></pre></div></details>
+<details class="expl"><summary>Erklärung anzeigen</summary><div><p>Patching auf ServiceAccount-Level beeinflusst alle Pods, die diesen SA nutzen. Wenn ein Pod keinen <code>serviceAccountName</code> spezifiziert, nutzt er <code>default</code>. Mit <code>automountServiceAccountToken: false</code> auf dem <code>default</code>-SA wird der Token in keinem solchen Pod mehr gemountet – Best Practice in Production-Namespaces.</p>
+<p>---</p></div></details>
+<h2 id="ü23">Ü2.3 – API Server: Anonyme Auth deaktivieren</h2>
+<div class="meta"><strong>Instance:</strong> <code>ssh cks-prep2</code> | <strong>Namespace:</strong> <code>kube-system</code> | <strong>Konzept:</strong> API Server Hardening</div>
+<div class="task"><p>Audit hat ergeben: Der kube-apiserver akzeptiert anonyme Requests. Auf Node <code>cks-prep2</code>:</p>
+<ol>
+<li>Backup des kube-apiserver Manifests nach <code>/root/kube-apiserver.yaml.bak</code></li>
+<li><code>--anonymous-auth=false</code> setzen im Manifest</li>
+<li>Falls <code>--authorization-mode</code> <code>AlwaysAllow</code> enthält oder fehlt: auf <code>Node,RBAC</code> setzen</li>
+<li>Auf API-Server-Restart warten</li>
+<li>Anonymen Zugriff testen:</li>
+<p>- <code>curl -k https://localhost:6443/api/v1/namespaces -o /tmp/anon-test 2&gt;&amp;1; echo $?</code>    - HTTP-Antwortcode → <code>/opt/hardening/anon-test-code.txt</code> (z.B. <code>401</code>)</p>
+</ol></div>
+<details><summary>Lösung anzeigen</summary><div><pre><code>mkdir -p /opt/hardening
+
+# 1) Backup
+sudo cp /etc/kubernetes/manifests/kube-apiserver.yaml \
+        /root/kube-apiserver.yaml.bak
+
+# 2) Editieren
+sudo vi /etc/kubernetes/manifests/kube-apiserver.yaml</code></pre>
+<p><strong>In <code>spec.containers[0].command</code>:</strong></p>
+<pre><code>    - --anonymous-auth=false
+    - --authorization-mode=Node,RBAC</code></pre>
+<p>(Falls die Flags schon existieren mit anderen Werten – ändern. Falls nicht vorhanden – hinzufügen.)</p>
+<pre><code># 3) Auf Restart warten
+sleep 15
+watch -n 2 &#x27;kubectl get pods -n kube-system | grep apiserver&#x27;
+# Bis Status Running
+
+# Healthcheck
+kubectl get --raw=&#x27;/healthz&#x27;
+# ok
+
+# 4) Anonymen Zugriff testen
+HTTP_CODE=$(curl -k -s -o /dev/null -w &quot;%{http_code}&quot; \
+  https://localhost:6443/api/v1/namespaces)
+
+echo &quot;$HTTP_CODE&quot; &gt; /opt/hardening/anon-test-code.txt
+cat /opt/hardening/anon-test-code.txt
+# 401  (oder 403)</code></pre></div></details>
+<details class="expl"><summary>Erklärung anzeigen</summary><div><p>Bei deaktivierter anonymer Auth wird ein Request ohne gültigen Token mit HTTP 401 (Unauthorized) zurückgewiesen. Mit <code>--anonymous-auth=true</code> würde er einen User <code>system:anonymous</code> zugewiesen bekommen und je nach RBAC-Konfiguration ggf. mit HTTP 200 antworten – das ist die unsichere Default-Variante.</p>
+<p>Falls API-Server nicht hochkommt: Backup zurückspielen mit <code>sudo cp /root/kube-apiserver.yaml.bak /etc/kubernetes/manifests/kube-apiserver.yaml</code>.</p>
+<p>---</p></div></details>
+<h2 id="ü24">Ü2.4 – Kubernetes Worker-Node Upgrade</h2>
+<div class="meta"><strong>Instance:</strong> <code>ssh cks-prep3</code> | <strong>Namespace:</strong> <code>default</code> | <strong>Konzept:</strong> Cluster Upgrade</div>
+<div class="task"><p>Worker-Node <code>cks-prep3</code> läuft auf v1.31.2. Upgrade auf v1.32.0:</p>
+<ol>
+<li>Node draininieren (DaemonSets ignorieren, emptyDir-Daten löschen)</li>
+<li>kubeadm auf v1.32.0 upgraden</li>
+<li><code>kubeadm upgrade node</code> ausführen</li>
+<li>kubelet + kubectl auf v1.32.0 upgraden</li>
+<li>kubelet neu starten</li>
+<li>Node wieder uncordon</li>
+<li>Verifizieren: Node <code>Ready</code> mit Version v1.32.0</li>
+<li>Version-Output → <code>/opt/upgrade/node-version.txt</code></li>
+</ol></div>
+<details><summary>Lösung anzeigen</summary><div><pre><code>mkdir -p /opt/upgrade
+
+# 1) Drain (vom Control-Plane aus oder via kubectl mit gültigem Context)
+kubectl drain cks-prep3 \
+  --ignore-daemonsets \
+  --delete-emptydir-data \
+  --force
+
+# 2) Auf der Worker-Node selbst (ssh cks-prep3):
+sudo apt-mark unhold kubeadm
+sudo apt-get update
+sudo apt-get install -y kubeadm=1.32.0-1.1
+sudo apt-mark hold kubeadm
+
+# 3) kubeadm upgrade auf Worker
+sudo kubeadm upgrade node
+
+# 4) kubelet + kubectl
+sudo apt-mark unhold kubelet kubectl
+sudo apt-get install -y kubelet=1.32.0-1.1 kubectl=1.32.0-1.1
+sudo apt-mark hold kubelet kubectl
+
+# 5) kubelet restart
+sudo systemctl daemon-reload
+sudo systemctl restart kubelet
+
+# 6) Uncordon (von Control-Plane oder mit kubeconfig)
+kubectl uncordon cks-prep3
+
+# 7) Verifikation
+kubectl get nodes cks-prep3 -o wide
+kubectl get nodes cks-prep3 -o jsonpath=&#x27;{.status.nodeInfo.kubeletVersion}&#x27; \
+  &gt; /opt/upgrade/node-version.txt
+cat /opt/upgrade/node-version.txt
+# v1.32.0</code></pre></div></details>
+<details class="expl"><summary>Erklärung anzeigen</summary><div><p>Worker-Upgrade unterscheidet sich vom Control-Plane-Upgrade: statt <code>kubeadm upgrade apply</code> (das Control-Plane-Komponenten upgradet) wird <code>kubeadm upgrade node</code> benutzt – das updated nur die kubelet-Config und die Bootstrap-Kubeconfig. Reihenfolge wichtig: drain → kubeadm → upgrade node → kubelet/kubectl → restart → uncordon.</p>
+<p><code>apt-mark hold</code> verhindert versehentliche Updates durch <code>apt upgrade</code> – muss vor Manual-Install entfernt und nach Install wieder gesetzt werden.</p>
+<p>---</p></div></details>
+<h1>3. SYSTEM HARDENING (10%)</h1>
+
+<h2 id="ü31">Ü3.1 – Custom AppArmor Profile mit Netzwerk-Beschränkung</h2>
+<div class="meta"><strong>Instance:</strong> <code>ssh cks-prep1</code> | <strong>Namespace:</strong> <code>restricted-net</code> | <strong>Konzept:</strong> AppArmor</div>
+<div class="task"><p>Für einen sensiblen Backend-Service soll AppArmor:</p>
+<ul>
+<li>Alle Schreibzugriffe verbieten außer in <code>/tmp</code> und <code>/var/log</code></li>
+<li>Raw-Sockets verbieten</li>
+<li>Nur TCP-Verbindungen zu Port 443 erlauben (kein anderer Outbound-Traffic)</li>
+</ul>
+<p>Auf Node <code>cks-prep1</code>:</p>
+<ol>
+<li>AppArmor-Profil <code>app-net-restrict</code> unter <code>/etc/apparmor.d/app-net-restrict</code></li>
+<li>Profil im <code>enforce</code>-Mode laden</li>
+<li>Namespace <code>restricted-net</code></li>
+<li>Pod <code>secure-backend</code> mit Image <code>nginxinc/nginx-unprivileged:1.25</code>, AppArmor-Profil <code>app-net-restrict</code>, UID 1000</li>
+</ol></div>
+<details><summary>Lösung anzeigen</summary><div><p><strong><code>/etc/apparmor.d/app-net-restrict</code>:</strong></p>
+<pre><code>#include &lt;tunables/global&gt;
+
+profile app-net-restrict flags=(attach_disconnected) {
+  #include &lt;abstractions/base&gt;
+
+  # Erlaubt: alles lesen
+  file,
+
+  # Verboten: schreiben überall
+  deny /** w,
+
+  # Erlaubt: schreiben in /tmp und /var/log
+  /tmp/** rw,
+  /var/log/** rw,
+
+  # Verboten: Raw-Sockets
+  deny network raw,
+
+  # Erlaubt: nur TCP (zusätzliche Einschränkung auf Port-Ebene
+  # kann AppArmor nicht — das macht NetworkPolicy)
+  network tcp,
+}</code></pre>
+<pre><code># Profil laden
+sudo apparmor_parser -r /etc/apparmor.d/app-net-restrict
+sudo aa-status | grep app-net-restrict
+
+# Namespace + Pod
+kubectl create namespace restricted-net --dry-run=client -o yaml | kubectl apply -f -</code></pre>
+<p><strong><code>secure-backend.yaml</code>:</strong></p>
+<pre><code>apiVersion: v1
+kind: Pod
+metadata:
+  name: secure-backend
+  namespace: restricted-net
+spec:
+  securityContext:
+    runAsUser: 1000
+  containers:
+  - name: backend
+    image: nginxinc/nginx-unprivileged:1.25
+    securityContext:
+      appArmorProfile:
+        type: Localhost
+        localhostProfile: app-net-restrict</code></pre>
+<pre><code>kubectl apply -f secure-backend.yaml
+kubectl get pod secure-backend -n restricted-net
+
+# Verifikation
+kubectl exec -n restricted-net secure-backend -- touch /etc/x
+# Permission denied
+
+kubectl exec -n restricted-net secure-backend -- touch /tmp/x
+# OK</code></pre></div></details>
+<details class="expl"><summary>Erklärung anzeigen</summary><div><p>AppArmor kann Dateipfade und grobe Netzwerk-Klassen (<code>tcp</code>, <code>udp</code>, <code>raw</code>, <code>icmp</code>) regeln, aber keine Ports. Port-Filterung muss über NetworkPolicies oder Seccomp passieren. <code>deny /** w</code> als erste Regel, danach selektives <code>rw</code> für <code>/tmp</code> und <code>/var/log</code> – AppArmor erlaubt diese kombinierte Schreibweise weil die spezifischeren Regeln vorrang haben.</p>
+<p>---</p></div></details>
+<h2 id="ü32">Ü3.2 – Seccomp RuntimeDefault enforcen</h2>
+<div class="meta"><strong>Instance:</strong> <code>ssh cks-prep1</code> | <strong>Namespace:</strong> <code>secure-apps</code> | <strong>Konzept:</strong> Seccomp</div>
+<div class="task"><p>Im Namespace <code>secure-apps</code> müssen alle Pods das <code>RuntimeDefault</code> Seccomp-Profil nutzen:</p>
+<ol>
+<li>Namespace <code>secure-apps</code> mit Pod Security Standards <code>restricted</code> Label setzen (das erzwingt seccomp)</li>
+<li>Pod <code>web-app</code> mit Image <code>nginxinc/nginx-unprivileged:1.25</code> deployen, das ALLE restricted-Anforderungen erfüllt</li>
+<li>Versuch einen zweiten Pod <code>bad-app</code> mit Image <code>nginx:1.25</code> (ohne security context) zu deployen</li>
+<li>Den Fehler des <code>bad-app</code>-Deployments nach <code>/opt/pss/bad-app-error.txt</code> schreiben</li>
+</ol></div>
+<details><summary>Lösung anzeigen</summary><div><pre><code>mkdir -p /opt/pss
+
+# 1) Namespace + PSS Labels
+kubectl create namespace secure-apps --dry-run=client -o yaml | kubectl apply -f -
+
+kubectl label namespace secure-apps \
+  pod-security.kubernetes.io/enforce=restricted \
+  pod-security.kubernetes.io/audit=restricted \
+  pod-security.kubernetes.io/warn=restricted \
+  --overwrite</code></pre>
+<p><strong><code>web-app.yaml</code>:</strong></p>
+<pre><code>apiVersion: v1
+kind: Pod
+metadata:
+  name: web-app
+  namespace: secure-apps
+spec:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - name: web
+    image: nginxinc/nginx-unprivileged:1.25
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop: [&quot;ALL&quot;]</code></pre>
+<pre><code>kubectl apply -f web-app.yaml
+# pod/web-app created</code></pre>
+<p><strong><code>bad-app.yaml</code>:</strong></p>
+<pre><code>apiVersion: v1
+kind: Pod
+metadata:
+  name: bad-app
+  namespace: secure-apps
+spec:
+  containers:
+  - name: bad
+    image: nginx:1.25</code></pre>
+<pre><code>kubectl apply -f bad-app.yaml 2&gt;&amp;1 | tee /opt/pss/bad-app-error.txt
+# Error from server (Forbidden): error when creating &quot;bad-app.yaml&quot;: 
+# pods &quot;bad-app&quot; is forbidden: violates PodSecurity &quot;restricted:latest&quot;: ...
+
+cat /opt/pss/bad-app-error.txt</code></pre></div></details>
+<details class="expl"><summary>Erklärung anzeigen</summary><div><p><code>tee</code> schreibt gleichzeitig nach stdout und in eine Datei – nützlich für Fehlermeldungen, die man speichern UND sehen will. <code>2&gt;&amp;1</code> umleitet stderr nach stdout, damit auch die Fehler erfasst werden. Die PSS-Fehlermeldung listet typischerweise alle Verstöße auf (runAsNonRoot, capabilities.drop, allowPrivilegeEscalation, seccompProfile).</p>
+<p>---</p></div></details>
+<h2 id="ü33">Ü3.3 – Unbenötigte Linux-Pakete auf Node identifizieren</h2>
+<div class="meta"><strong>Instance:</strong> <code>ssh cks-prep2</code> | <strong>Namespace:</strong> <code>default</code> | <strong>Konzept:</strong> Host OS Minimization</div>
+<div class="task"><p>Reduzierung der Angriffsfläche durch Entfernen ungenutzter Pakete. Auf Node <code>cks-prep2</code>:</p>
+<ol>
+<li>Eine Liste von verdächtigen Paketen prüfen: <code>nmap</code>, <code>tcpdump</code>, <code>netcat-openbsd</code>, <code>telnet</code>, <code>ftp</code></li>
+<li>Für jedes Paket prüfen ob installiert</li>
+<li>Ergebnis-Datei <code>/opt/audit/suspicious-pkgs.txt</code> erstellen mit Format <code>&lt;package&gt;: installed</code> oder <code>&lt;package&gt;: not-installed</code></li>
+<li>ALLE installierten Pakete aus der Liste deinstallieren (<code>apt-get remove -y</code>)</li>
+<li>Re-Verify: alle Pakete sollten jetzt <code>not-installed</code> sein, nach <code>/opt/audit/suspicious-pkgs-after.txt</code></li>
+</ol></div>
+<details><summary>Lösung anzeigen</summary><div><pre><code>mkdir -p /opt/audit
+
+PKGS=&quot;nmap tcpdump netcat-openbsd telnet ftp&quot;
+
+# 1+2+3) Check pro Paket
+&gt; /opt/audit/suspicious-pkgs.txt
+for pkg in $PKGS; do
+  if dpkg -l &quot;$pkg&quot; 2&gt;/dev/null | grep -q &quot;^ii&quot;; then
+    echo &quot;$pkg: installed&quot; &gt;&gt; /opt/audit/suspicious-pkgs.txt
+  else
+    echo &quot;$pkg: not-installed&quot; &gt;&gt; /opt/audit/suspicious-pkgs.txt
+  fi
+done
+
+cat /opt/audit/suspicious-pkgs.txt
+
+# 4) Installierte entfernen
+INSTALLED=$(grep &quot;: installed$&quot; /opt/audit/suspicious-pkgs.txt | cut -d: -f1)
+if [ -n &quot;$INSTALLED&quot; ]; then
+  sudo apt-get remove -y $INSTALLED
+fi
+
+# 5) Re-verify
+&gt; /opt/audit/suspicious-pkgs-after.txt
+for pkg in $PKGS; do
+  if dpkg -l &quot;$pkg&quot; 2&gt;/dev/null | grep -q &quot;^ii&quot;; then
+    echo &quot;$pkg: installed&quot; &gt;&gt; /opt/audit/suspicious-pkgs-after.txt
+  else
+    echo &quot;$pkg: not-installed&quot; &gt;&gt; /opt/audit/suspicious-pkgs-after.txt
+  fi
+done
+
+cat /opt/audit/suspicious-pkgs-after.txt</code></pre></div></details>
+<details class="expl"><summary>Erklärung anzeigen</summary><div><p><code>dpkg -l &lt;pkg&gt;</code> listet ein Paket – Status <code>ii</code> bedeutet &quot;installed&quot;, andere Zeichen heißen halb-installiert/entfernt-aber-Configs. <code>grep &quot;^ii&quot;</code> matcht exakt installierte Pakete. <code>apt-get remove</code> entfernt Binaries, <code>apt-get purge</code> zusätzlich Configs.</p>
+<p>Diese Tools (<code>nmap</code>, <code>tcpdump</code>, <code>netcat</code>) sind klassische Angreifer-Werkzeuge für Recon und Reverse-Shells – auf Production-Worker-Nodes haben sie nichts zu suchen.</p>
+<p>---</p></div></details>
+<h1>4. MINIMIZE MICROSERVICE VULNERABILITIES (20%)</h1>
+
+<h2 id="ü41">Ü4.1 – PSS baseline Namespace einrichten</h2>
+<div class="meta"><strong>Instance:</strong> <code>ssh cks-prep1</code> | <strong>Namespace:</strong> <code>mid-trust</code> | <strong>Konzept:</strong> Pod Security Standards</div>
+<div class="task"><p>Manche Legacy-Apps können <code>restricted</code> nicht erfüllen, aber <code>baseline</code> ist Pflicht. Auf Cluster <code>cks-prep1</code>:</p>
+<ol>
+<li>Namespace <code>mid-trust</code> mit PSS Labels:</li>
+<p>- <code>enforce=baseline</code>    - <code>warn=restricted</code>    - <code>audit=restricted</code></p>
+<li>Pod <code>legacy-app</code> (Image <code>nginx:1.25</code>) deployen → muss starten (verstößt gegen restricted aber nicht gegen baseline)</li>
+<li>Pod <code>privileged-app</code> (Image <code>nginx:1.25</code>, <code>securityContext.privileged: true</code>) deployen → muss abgelehnt werden</li>
+<li>Error-Message des privileged-app → <code>/opt/pss-test/privileged-error.txt</code></li>
+</ol></div>
+<details><summary>Lösung anzeigen</summary><div><pre><code>mkdir -p /opt/pss-test
+kubectl create namespace mid-trust --dry-run=client -o yaml | kubectl apply -f -
+
+kubectl label namespace mid-trust \
+  pod-security.kubernetes.io/enforce=baseline \
+  pod-security.kubernetes.io/warn=restricted \
+  pod-security.kubernetes.io/audit=restricted \
+  --overwrite</code></pre>
+<p><strong><code>legacy-app.yaml</code>:</strong></p>
+<pre><code>apiVersion: v1
+kind: Pod
+metadata:
+  name: legacy-app
+  namespace: mid-trust
+spec:
+  containers:
+  - name: legacy
+    image: nginx:1.25</code></pre>
+<pre><code>kubectl apply -f legacy-app.yaml
+# pod/legacy-app created (mit warning wegen restricted-warn)</code></pre>
+<p><strong><code>privileged-app.yaml</code>:</strong></p>
+<pre><code>apiVersion: v1
+kind: Pod
+metadata:
+  name: privileged-app
+  namespace: mid-trust
+spec:
+  containers:
+  - name: priv
+    image: nginx:1.25
+    securityContext:
+      privileged: true</code></pre>
+<pre><code>kubectl apply -f privileged-app.yaml 2&gt;&amp;1 | tee /opt/pss-test/privileged-error.txt
+# Error: pods &quot;privileged-app&quot; is forbidden: violates PodSecurity &quot;baseline:latest&quot;:
+# privileged (container &quot;priv&quot; must not set securityContext.privileged=true)</code></pre></div></details>
+<details class="expl"><summary>Erklärung anzeigen</summary><div><p>Die drei PSS-Levels in der Hierarchie:</p>
+<ul>
+<li><strong>privileged</strong>: alles erlaubt (Default)</li>
+<li><strong>baseline</strong>: keine offensichtlich gefährlichen Settings (<code>privileged</code>, <code>hostNetwork</code>, <code>hostPID</code>, etc.)</li>
+<li><strong>restricted</strong>: zusätzlich non-root, capabilities.drop, seccomp etc.</li>
+</ul>
+<p>Mit <code>enforce=baseline</code> und <code>warn/audit=restricted</code> läuft jeder Pod, der <code>baseline</code> erfüllt, bekommt aber Warnings/Audit-Einträge wenn er <code>restricted</code> nicht erfüllt. Perfekt für graduelles Hardening – Devs sehen sofort, was sie verbessern müssten.</p>
+<p>---</p></div></details>
+<h2 id="ü42">Ü4.2 – Secret mit Encryption-at-Rest verifizieren</h2>
+<div class="meta"><strong>Instance:</strong> <code>ssh cks-prep2</code> | <strong>Namespace:</strong> <code>secure-vault</code> | <strong>Konzept:</strong> Kubernetes Secrets, Encryption at Rest</div>
+<div class="task"><p>Encryption-at-Rest ist konfiguriert. Verifizieren ob ein neues Secret tatsächlich verschlüsselt ist:</p>
+<ol>
+<li>Namespace <code>secure-vault</code></li>
+<li>Secret <code>db-creds</code> mit <code>username=admin</code> und <code>password=Sup3rS3cr3t!</code> in <code>secure-vault</code></li>
+<li>Mit <code>etcdctl</code> auf Node <code>cks-prep2</code> den Raw-Inhalt des Secrets aus etcd lesen</li>
+<li>Output → <code>/opt/verify/etcd-raw.txt</code></li>
+<li>Falls Output mit <code>k8s:enc:aescbc:</code> oder <code>k8s:enc:aesgcm:</code> beginnt → <code>/opt/verify/encrypted.txt</code> mit Inhalt <code>YES</code></li>
+<li>Sonst → <code>/opt/verify/encrypted.txt</code> mit Inhalt <code>NO</code></li>
+</ol></div>
+<details><summary>Lösung anzeigen</summary><div><pre><code>mkdir -p /opt/verify
+
+kubectl create namespace secure-vault --dry-run=client -o yaml | kubectl apply -f -
+
+kubectl create secret generic db-creds \
+  --from-literal=username=admin \
+  --from-literal=password=&#x27;Sup3rS3cr3t!&#x27; \
+  -n secure-vault
+
+# 3) etcd-Raw lesen
+sudo ETCDCTL_API=3 etcdctl \
+  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+  --cert=/etc/kubernetes/pki/etcd/server.crt \
+  --key=/etc/kubernetes/pki/etcd/server.key \
+  get /registry/secrets/secure-vault/db-creds \
+  &gt; /opt/verify/etcd-raw.txt
+
+cat /opt/verify/etcd-raw.txt | head -5
+
+# 5+6) Check auf Encryption-Marker
+if head -c 200 /opt/verify/etcd-raw.txt | grep -qE &quot;k8s:enc:(aescbc|aesgcm|kms)&quot;; then
+  echo &quot;YES&quot; &gt; /opt/verify/encrypted.txt
+else
+  echo &quot;NO&quot; &gt; /opt/verify/encrypted.txt
+fi
+
+cat /opt/verify/encrypted.txt</code></pre></div></details>
+<details class="expl"><summary>Erklärung anzeigen</summary><div><p>etcd-Werte fangen bei verschlüsselten Resources mit einem Prefix wie <code>k8s:enc:aescbc:v1:&lt;key-name&gt;:</code> an, gefolgt von Binär-Ciphertext. Bei <code>identity</code>-Provider (= unverschlüsselt) wäre der Plain-Text direkt lesbar. <code>head -c 200</code> reicht – Prefix ist in den ersten ~50 Bytes. <code>grep -E</code> für ERE mit <code>|</code> für OR-Pattern.</p>
+<p>Falls die Encryption fehlt: in <code>/etc/kubernetes/manifests/kube-apiserver.yaml</code> das Flag <code>--encryption-provider-config=/path/to/config</code> setzen und Config mit aescbc/aesgcm-Provider erstellen.</p>
+<p>---</p></div></details>
+<h2 id="ü43">Ü4.3 – gVisor RuntimeClass + Pod Migration</h2>
+<div class="meta"><strong>Instance:</strong> <code>ssh cks-prep1</code> | <strong>Namespace:</strong> <code>sandbox-required</code> | <strong>Konzept:</strong> Sandboxed Containers</div>
+<div class="task"><p>Im Cluster gibt&#x27;s bereits eine RuntimeClass <code>gvisor</code> (handler <code>runsc</code>). Aufgabe:</p>
+<ol>
+<li>Namespace <code>sandbox-required</code></li>
+<li>Bestehendes Deployment <code>untrusted-job</code> (im Namespace <code>sandbox-required</code>, vorab vom Operator deployed) so patchen, dass es <code>runtimeClassName: gvisor</code> nutzt</li>
+<li>Verifikation: nach Rollout muss der Pod mit <code>dmesg | grep -i gvisor</code> (innerhalb des Containers) Output liefern – Output → <code>/opt/sandbox/gvisor-verify.txt</code></li>
+</ol></div>
+<details><summary>Lösung anzeigen</summary><div><pre><code>mkdir -p /opt/sandbox
+
+# 1) Falls Namespace fehlt
+kubectl create namespace sandbox-required --dry-run=client -o yaml | kubectl apply -f -
+
+# RuntimeClass prüfen
+kubectl get runtimeclass gvisor
+
+# 2) Deployment patchen
+kubectl patch deployment untrusted-job -n sandbox-required \
+  --type=strategic -p &#x27;
+spec:
+  template:
+    spec:
+      runtimeClassName: gvisor
+&#x27;
+
+# Rollout abwarten
+kubectl rollout status deployment/untrusted-job -n sandbox-required
+
+# 3) Verifikation innerhalb des Pods
+POD=$(kubectl get pods -n sandbox-required -l app=untrusted-job \
+        -o jsonpath=&#x27;{.items[0].metadata.name}&#x27;)
+
+kubectl exec -n sandbox-required $POD -- dmesg 2&gt;&amp;1 | grep -i gvisor \
+  &gt; /opt/sandbox/gvisor-verify.txt
+
+cat /opt/sandbox/gvisor-verify.txt</code></pre></div></details>
+<details class="expl"><summary>Erklärung anzeigen</summary><div><p><code>runtimeClassName</code> ist eine Pod-Spec-Property – wird auf <code>spec.template.spec</code> für Deployments gesetzt, nicht auf den Container. gVisor identifiziert sich beim Boot mit Logs wie &quot;Starting gVisor...&quot; oder ähnlichem, die mit <code>dmesg</code> sichtbar sind. Wenn nichts ausgegeben wird, läuft der Container nicht in gVisor.</p>
+<p>Voraussetzung: <code>runsc</code> muss auf den Worker-Nodes installiert sein und in der containerd config registriert. Im CKS-Exam ist das vorhanden.</p>
+<p>---</p></div></details>
+<h2 id="ü44">Ü4.4 – Cilium L7 Policy: HTTP-Methoden beschränken</h2>
+<div class="meta"><strong>Instance:</strong> <code>ssh cks-prep4</code> | <strong>Namespace:</strong> <code>api-tier</code> | <strong>Konzept:</strong> Cilium NetworkPolicies, L7 Filtering</div>
+<div class="task"><p>Cluster <code>cks-prep4</code> nutzt Cilium. Im Namespace <code>api-tier</code> läuft ein API-Service <code>read-api</code> (Label <code>app=read-api</code>, Port 8080), der NUR GET-Requests akzeptieren soll – PUT/POST/DELETE müssen blockiert werden:</p>
+<ol>
+<li>CiliumNetworkPolicy <code>readonly-api</code> in <code>api-tier</code>:</li>
+<p>- Greift auf Pods mit Label <code>app=read-api</code>    - Ingress auf TCP 8080 erlaubt, aber nur HTTP-Methode <code>GET</code></p>
+<li>Test-Pod <code>client</code> (Image <code>curlimages/curl:8.5.0</code>, command <code>sleep 3600</code>) in <code>api-tier</code></li>
+<li>Test:</li>
+<p>- <code>curl -X GET http://read-api:8080/items</code> → muss klappen    - <code>curl -X POST http://read-api:8080/items</code> → muss blockiert sein</p>
+<li>Beide Outputs → <code>/opt/cilium-test/get.txt</code> und <code>/opt/cilium-test/post.txt</code></li>
+</ol></div>
+<details><summary>Lösung anzeigen</summary><div><pre><code>mkdir -p /opt/cilium-test
+kubectl create namespace api-tier --dry-run=client -o yaml | kubectl apply -f -</code></pre>
+<p><strong><code>readonly-api.yaml</code>:</strong></p>
+<pre><code>apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: readonly-api
+  namespace: api-tier
+spec:
+  endpointSelector:
+    matchLabels:
+      app: read-api
+  ingress:
+  - toPorts:
+    - ports:
+      - port: &quot;8080&quot;
+        protocol: TCP
+      rules:
+        http:
+        - method: &quot;GET&quot;</code></pre>
+<pre><code>kubectl apply -f readonly-api.yaml
+
+# Test-Client
+kubectl run client \
+  --image=curlimages/curl:8.5.0 \
+  --command -- sleep 3600 \
+  -n api-tier
+
+kubectl wait --for=condition=Ready pod/client -n api-tier --timeout=60s
+
+# Tests
+kubectl exec -n api-tier client -- \
+  curl -s -X GET http://read-api:8080/items \
+  &gt; /opt/cilium-test/get.txt 2&gt;&amp;1
+
+kubectl exec -n api-tier client -- \
+  curl -s -X POST http://read-api:8080/items \
+  &gt; /opt/cilium-test/post.txt 2&gt;&amp;1
+
+cat /opt/cilium-test/get.txt
+# Erfolg (200 OK Body)
+
+cat /opt/cilium-test/post.txt
+# 403 Access Denied (von Cilium proxy)</code></pre></div></details>
+<details class="expl"><summary>Erklärung anzeigen</summary><div><p>Cilium kann auf Layer 7 (HTTP) filtern – das ist ein massiver Schritt über klassische NetworkPolicies (L3/L4) hinaus. <code>rules.http.method</code> matcht die HTTP-Methode, <code>rules.http.path</code> matcht den URL-Pfad mit Regex. Cilium injiziert intern einen Envoy-Proxy, der die L7-Inspection macht.</p>
+<p>Vergleich zu klassischer NetworkPolicy: Die kennt nur &quot;TCP zu Port 8080&quot; – kann nicht zwischen GET und POST unterscheiden.</p>
+<p>---</p></div></details>
+<h2 id="ü45">Ü4.5 – mTLS via Cilium für sensible Services</h2>
+<div class="meta"><strong>Instance:</strong> <code>ssh cks-prep4</code> | <strong>Namespace:</strong> <code>payment</code> | <strong>Konzept:</strong> Pod-to-Pod Encryption</div>
+<div class="task"><p>Im <code>payment</code> Namespace (Cluster <code>cks-prep4</code> mit Cilium) muss die Kommunikation zwischen <code>payment-svc</code> und <code>bank-connector</code> verschlüsselt + authentifiziert sein:</p>
+<ol>
+<li>CiliumNetworkPolicy <code>payment-to-bank-mtls</code> in <code>payment</code>:</li>
+<p>- Selector: <code>app=payment-svc</code>    - Egress zu <code>app=bank-connector</code> auf TCP 8443    - Mutual Authentication required</p>
+<li>CiliumNetworkPolicy <code>bank-from-payment-only</code> in <code>payment</code>:</li>
+<p>- Selector: <code>app=bank-connector</code>    - Ingress nur von <code>app=payment-svc</code> auf TCP 8443    - Mutual Authentication required</p>
+</ol></div>
+<details><summary>Lösung anzeigen</summary><div><pre><code>kubectl create namespace payment --dry-run=client -o yaml | kubectl apply -f -</code></pre>
+<p><strong><code>payment-to-bank-mtls.yaml</code>:</strong></p>
+<pre><code>apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: payment-to-bank-mtls
+  namespace: payment
+spec:
+  endpointSelector:
+    matchLabels:
+      app: payment-svc
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        app: bank-connector
+    toPorts:
+    - ports:
+      - port: &quot;8443&quot;
+        protocol: TCP
+    authentication:
+      mode: required</code></pre>
+<p><strong><code>bank-from-payment-only.yaml</code>:</strong></p>
+<pre><code>apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: bank-from-payment-only
+  namespace: payment
+spec:
+  endpointSelector:
+    matchLabels:
+      app: bank-connector
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        app: payment-svc
+    toPorts:
+    - ports:
+      - port: &quot;8443&quot;
+        protocol: TCP
+    authentication:
+      mode: required</code></pre>
+<pre><code>kubectl apply -f payment-to-bank-mtls.yaml
+kubectl apply -f bank-from-payment-only.yaml
+
+kubectl get ciliumnetworkpolicy -n payment</code></pre></div></details>
+<details class="expl"><summary>Erklärung anzeigen</summary><div><p><code>authentication.mode: required</code> zwingt Cilium, vor dem Verbindungsaufbau eine mutual-TLS-Handshake auszuführen. Cilium nutzt SPIFFE-Identitäten und automatisch verwaltete Zertifikate – kein manuelles Cert-Handling nötig.</p>
+<p>Beide Seiten der Verbindung (Egress vom Sender, Ingress beim Empfänger) brauchen <code>authentication: required</code>. Ohne den symmetrischen Setup würde eine Seite blocken weil die andere nicht authentifiziert ist.</p>
+<p>Voraussetzung: Cilium muss mit <code>--enable-mutual-authentication</code> gestartet sein (im CKS-Exam vorhanden).</p>
+<p>---</p></div></details>
+<h1>5. SUPPLY CHAIN SECURITY (20%)</h1>
+
+<h2 id="ü51">Ü5.1 – Distroless Image Migration</h2>
+<div class="meta"><strong>Instance:</strong> <code>ssh cks-prep1</code> | <strong>Namespace:</strong> <code>prod-apps</code> | <strong>Konzept:</strong> Base Image Minimization</div>
+<div class="task"><p>Ein Dockerfile unter <code>/opt/build/Dockerfile</code> nutzt <code>ubuntu:22.04</code> als Base und installiert curl + wget + Python:</p>
+<ol>
+<li>Dockerfile so umschreiben, dass es ein Distroless-Image für Python verwendet</li>
+<li><code>curl</code>, <code>wget</code> und andere unnötige Tools nicht im finalen Image</li>
+<li>Multi-Stage-Build: Erste Stage baut alles mit <code>python:3.12-slim</code>, finale Stage ist <code>gcr.io/distroless/python3-debian12</code></li>
+<li>App-Code wird nach <code>/app/main.py</code> kopiert, Entrypoint ist <code>python /app/main.py</code></li>
+<li>Datei <code>/opt/build/Dockerfile.distroless</code> mit dem neuen Dockerfile</li>
+</ol></div>
+<details><summary>Lösung anzeigen</summary><div><p><strong><code>/opt/build/Dockerfile.distroless</code>:</strong></p>
+<pre><code># Stage 1: Build stage
+FROM python:3.12-slim AS builder
+
+WORKDIR /app
+
+# Falls requirements.txt vorhanden
+COPY requirements.txt .
+RUN pip install --user --no-cache-dir -r requirements.txt
+
+COPY main.py /app/main.py
+
+# Stage 2: Distroless runtime
+FROM gcr.io/distroless/python3-debian12
+
+WORKDIR /app
+
+# Python packages aus dem Builder kopieren
+COPY --from=builder /root/.local /root/.local
+
+# App-Code
+COPY --from=builder /app /app
+
+# Pythonpath aktualisieren (für --user installs)
+ENV PYTHONPATH=/root/.local/lib/python3.12/site-packages
+ENV PATH=/root/.local/bin:$PATH
+
+ENTRYPOINT [&quot;python&quot;, &quot;/app/main.py&quot;]</code></pre>
+<pre><code># Wichtig: NICHT bauen (frisst Storage im Exam)
+ls -la /opt/build/Dockerfile.distroless</code></pre></div></details>
+<details class="expl"><summary>Erklärung anzeigen</summary><div><p>Distroless-Images haben keinen Shell, kein <code>apt</code>, kein <code>curl</code> – nur die App und ihre Runtime (hier Python). Angreifer mit Code-Execution haben keine Tools mehr zur Verfügung. Multi-Stage-Builds: in Stage 1 wird mit normalem Image gebaut (mit allen Tools), in Stage 2 nur die fertigen Artefakte übernommen – das finale Image ist klein und tool-frei.</p>
+<p><code>--from=builder</code> referenziert die vorherige Stage. <code>pip install --user</code> legt Packages in <code>~/.local</code> ab, was sich besser kopieren lässt als systemweite Packages.</p>
+<p>Image-Größe roughly: <code>python:3.12</code> ~1 GB, <code>python:3.12-slim</code> ~120 MB, <code>distroless/python3</code> ~50 MB.</p>
+<p>---</p></div></details>
+<h2 id="ü52">Ü5.2 – Trivy mit Ignore-Liste</h2>
+<div class="meta"><strong>Instance:</strong> <code>ssh cks-prep1</code> | <strong>Namespace:</strong> <code>default</code> | <strong>Konzept:</strong> Image Scanning</div>
+<div class="task"><p>Image <code>nginx:1.21</code> soll gescannt werden, aber einige bekannte CVEs sind bereits akzeptiert (false positives oder by-design):</p>
+<ol>
+<li>Trivy-Scan auf <code>nginx:1.21</code> mit Severity-Filter <code>CRITICAL,HIGH</code></li>
+<li>Output (JSON) → <code>/opt/trivy/nginx-scan.json</code></li>
+<li>Ignore-Datei <code>/opt/trivy/.trivyignore</code> mit den CVEs:</li>
+<p>``<code>    CVE-2023-0286    CVE-2023-0464    CVE-2023-0465    </code>``</p>
+<li>Nochmal scannen mit Ignore-Datei, Output → <code>/opt/trivy/nginx-scan-filtered.json</code></li>
+<li>Anzahl der gefundenen Vulnerabilities vorher und nachher → <code>/opt/trivy/count-diff.txt</code> im Format:</li>
+<p>``<code>    before: &lt;number&gt;    after: &lt;number&gt;    </code>``</p>
+</ol></div>
+<details><summary>Lösung anzeigen</summary><div><pre><code>mkdir -p /opt/trivy
+
+# 1) Erster Scan
+trivy image --severity CRITICAL,HIGH \
+  --format json \
+  --output /opt/trivy/nginx-scan.json \
+  nginx:1.21
+
+# 3) Ignore-Datei
+cat &gt; /opt/trivy/.trivyignore &lt;&lt;EOF
+CVE-2023-0286
+CVE-2023-0464
+CVE-2023-0465
+EOF
+
+# 4) Zweiter Scan mit Ignore
+trivy image --severity CRITICAL,HIGH \
+  --ignorefile /opt/trivy/.trivyignore \
+  --format json \
+  --output /opt/trivy/nginx-scan-filtered.json \
+  nginx:1.21
+
+# 5) Anzahlen
+BEFORE=$(jq &#x27;[.Results[]?.Vulnerabilities[]?] | length&#x27; \
+  /opt/trivy/nginx-scan.json)
+AFTER=$(jq &#x27;[.Results[]?.Vulnerabilities[]?] | length&#x27; \
+  /opt/trivy/nginx-scan-filtered.json)
+
+cat &gt; /opt/trivy/count-diff.txt &lt;&lt;EOF
+before: $BEFORE
+after: $AFTER
+EOF
+
+cat /opt/trivy/count-diff.txt</code></pre></div></details>
+<details class="expl"><summary>Erklärung anzeigen</summary><div><p><code>--ignorefile</code> (oder <code>.trivyignore</code> im aktuellen Verzeichnis) lässt Trivy bestimmte CVEs überspringen. Jede Zeile = eine CVE-ID. Kommentare mit <code>#</code> möglich.</p>
+<p><code>jq &#x27;[.Results[]?.Vulnerabilities[]?] | length&#x27;</code>: flach durch alle Results und ihre Vulnerabilities iterieren, dann Länge zählen. Der <code>?</code>-Operator vermeidet Fehler wenn Felder fehlen.</p>
+<p>In der Praxis: false positives in <code>.trivyignore</code>, echte CVEs werden gefixt indem das Base-Image aktualisiert wird.</p>
+<p>---</p></div></details>
+<h2 id="ü53">Ü5.3 – ImagePolicyWebhook für vertrauenswürdige Registry</h2>
+<div class="meta"><strong>Instance:</strong> <code>ssh cks-prep2</code> | <strong>Namespace:</strong> <code>prod</code> | <strong>Konzept:</strong> Image Validation, API Server</div>
+<div class="task"><p>Nur Images aus <code>registry.internal.corp/*</code> sollen erlaubt sein. Auf Node <code>cks-prep2</code>:</p>
+<ol>
+<li>AdmissionConfiguration unter <code>/etc/kubernetes/admission/admission-config.yaml</code>:</li>
+<p>- ImagePolicyWebhook    - Kubeconfig: <code>/etc/kubernetes/webhook/image-policy-kubeconfig.yaml</code> (existiert bereits)    - <code>defaultAllow: false</code>    - <code>allowTTL: 50</code>, <code>denyTTL: 50</code>, <code>retryBackoff: 500</code></p>
+<li>kube-apiserver Manifest patchen:</li>
+<p>- <code>--enable-admission-plugins=ImagePolicyWebhook</code> (zur bestehenden Liste hinzufügen)    - <code>--admission-control-config-file=/etc/kubernetes/admission/admission-config.yaml</code>    - Volumes und VolumeMounts für <code>/etc/kubernetes/admission</code> und <code>/etc/kubernetes/webhook</code></p>
+<li>Auf Restart warten</li>
+<li>Namespace <code>prod</code></li>
+<li>Pod-Versuch <code>external</code> mit <code>nginx:1.25</code> (vom Public-Hub) deployen → muss vom Webhook abgelehnt werden</li>
+<li>Error-Message → <code>/opt/admission/external-error.txt</code></li>
+</ol></div>
+<details><summary>Lösung anzeigen</summary><div><p><strong><code>/etc/kubernetes/admission/admission-config.yaml</code>:</strong></p>
+<pre><code>apiVersion: apiserver.config.k8s.io/v1
+kind: AdmissionConfiguration
+plugins:
+- name: ImagePolicyWebhook
+  configuration:
+    imagePolicy:
+      kubeConfigFile: /etc/kubernetes/webhook/image-policy-kubeconfig.yaml
+      allowTTL: 50
+      denyTTL: 50
+      retryBackoff: 500
+      defaultAllow: false</code></pre>
+<p><strong>Backup machen und kube-apiserver editieren:</strong></p>
+<pre><code>sudo cp /etc/kubernetes/manifests/kube-apiserver.yaml \
+        /root/kube-apiserver.yaml.bak
+
+sudo vi /etc/kubernetes/manifests/kube-apiserver.yaml</code></pre>
+<p><strong>In <code>spec.containers[0].command</code> (bestehende <code>--enable-admission-plugins</code> erweitern, NICHT überschreiben):</strong></p>
+<pre><code>    - --enable-admission-plugins=NodeRestriction,ImagePolicyWebhook
+    - --admission-control-config-file=/etc/kubernetes/admission/admission-config.yaml</code></pre>
+<p><strong>In <code>volumeMounts</code>:</strong></p>
+<pre><code>    - name: admission
+      mountPath: /etc/kubernetes/admission
+      readOnly: true
+    - name: webhook
+      mountPath: /etc/kubernetes/webhook
+      readOnly: true</code></pre>
+<p><strong>In <code>volumes</code>:</strong></p>
+<pre><code>  - name: admission
+    hostPath:
+      path: /etc/kubernetes/admission
+      type: DirectoryOrCreate
+  - name: webhook
+    hostPath:
+      path: /etc/kubernetes/webhook
+      type: DirectoryOrCreate</code></pre>
+<pre><code>mkdir -p /opt/admission
+
+# Auf Restart warten
+sleep 20
+kubectl get pods -n kube-system | grep apiserver
+
+# 4+5+6) Test
+kubectl create namespace prod --dry-run=client -o yaml | kubectl apply -f -
+
+kubectl run external --image=nginx:1.25 -n prod \
+  2&gt;&amp;1 | tee /opt/admission/external-error.txt
+
+cat /opt/admission/external-error.txt
+# Error from server (Forbidden): pods &quot;external&quot; is forbidden:
+# image policy webhook backend denied one or more images: ...</code></pre></div></details>
+<details class="expl"><summary>Erklärung anzeigen</summary><div><p><code>ImagePolicyWebhook</code> ist ein Validation-Admission-Controller, der pro Pod-Create einen externen Webhook ruft. Der Webhook entscheidet pro Image: erlaubt oder nicht. Mit <code>defaultAllow: false</code> werden Requests abgelehnt, wenn der Webhook nicht erreichbar ist (fail-closed = sicher). Mit <code>true</code> wären sie erlaubt (fail-open = weniger sicher, mehr Verfügbarkeit).</p>
+<p><code>allowTTL</code>/<code>denyTTL</code>: Caching-Zeiten in Sekunden. Reduziert Webhook-Calls bei wiederholten gleichen Images.</p>
+<p>Wichtig: ImagePolicyWebhook braucht einen separaten Webhook-Service (Pod im Cluster oder externer Service). Im Exam ist der vorhanden.</p>
+<p>---</p></div></details>
+<h2 id="ü54">Ü5.4 – Cosign Image-Signatur verifizieren</h2>
+<div class="meta"><strong>Instance:</strong> <code>ssh cks-prep1</code> | <strong>Namespace:</strong> <code>default</code> | <strong>Konzept:</strong> Image Signing</div>
+<div class="task"><p>Vor Deployment soll überprüft werden, ob ein Image signiert ist:</p>
+<ol>
+<li>Public Key liegt unter <code>/opt/cosign/public.pem</code></li>
+<li>Verifiziere die Signatur des Images <code>registry.internal.corp/payments:v2.1.0</code></li>
+<li>Output von <code>cosign verify</code> → <code>/opt/cosign/verify-output.txt</code></li>
+<li>Ergebnis (<code>SIGNED</code> oder <code>UNSIGNED</code>) → <code>/opt/cosign/result.txt</code></li>
+</ol></div>
+<details><summary>Lösung anzeigen</summary><div><pre><code>mkdir -p /opt/cosign
+
+# Verify
+cosign verify --key /opt/cosign/public.pem \
+  registry.internal.corp/payments:v2.1.0 \
+  &gt; /opt/cosign/verify-output.txt 2&gt;&amp;1
+
+EXIT_CODE=$?
+
+if [ $EXIT_CODE -eq 0 ]; then
+  echo &quot;SIGNED&quot; &gt; /opt/cosign/result.txt
+else
+  echo &quot;UNSIGNED&quot; &gt; /opt/cosign/result.txt
+fi
+
+cat /opt/cosign/result.txt</code></pre></div></details>
+<details class="expl"><summary>Erklärung anzeigen</summary><div><p>Cosign nutzt asymmetrische Kryptografie (Public/Private-Key oder Sigstore Keyless). Beim Signieren wird ein Hash des Image-Manifests mit dem Private Key signiert und in der Registry abgelegt. Beim Verifizieren wird der Public Key gegen die Signatur geprüft.</p>
+<p>Exit-Code 0 = Signatur ist valide, Exit-Code != 0 = unsigniert oder Signatur ungültig. Das ist der Indikator, den wir in das Result-File schreiben.</p>
+<p>In Production wird das als Admission Controller (z.B. Sigstore Policy Controller oder Kyverno) eingebunden, der unsignierte Images automatisch ablehnt.</p>
+<p>---</p></div></details>
+<h2 id="ü55">Ü5.5 – Kubesec Static Analysis im CI</h2>
+<div class="meta"><strong>Instance:</strong> <code>ssh cks-prep1</code> | <strong>Namespace:</strong> <code>default</code> | <strong>Konzept:</strong> Static Analysis</div>
+<div class="task"><p>Drei Pod-Manifeste liegen unter <code>/opt/manifests/</code>:</p>
+<ul>
+<li><code>pod-bad.yaml</code></li>
+<li><code>pod-medium.yaml</code></li>
+<li><code>pod-good.yaml</code></li>
+</ul>
+<p>Aufgabe:</p>
+<ol>
+<li>Jedes Manifest mit <code>kubesec scan</code> analysieren</li>
+<li>Score pro Manifest extrahieren und in <code>/opt/scores/scores.txt</code> schreiben, Format:</li>
+<p>``<code>    pod-bad.yaml: &lt;score&gt;    pod-medium.yaml: &lt;score&gt;    pod-good.yaml: &lt;score&gt;    </code>``</p>
+<li>Manifeste mit Score &lt; 0 in <code>/opt/scores/failed.txt</code> listen (eine pro Zeile, nur Filename)</li>
+</ol></div>
+<details><summary>Lösung anzeigen</summary><div><pre><code>mkdir -p /opt/scores
+&gt; /opt/scores/scores.txt
+&gt; /opt/scores/failed.txt
+
+for f in /opt/manifests/pod-bad.yaml \
+         /opt/manifests/pod-medium.yaml \
+         /opt/manifests/pod-good.yaml; do
+  NAME=$(basename &quot;$f&quot;)
+  SCORE=$(kubesec scan &quot;$f&quot; | jq &#x27;.[0].score&#x27;)
+  echo &quot;$NAME: $SCORE&quot; &gt;&gt; /opt/scores/scores.txt
+  if [ &quot;$SCORE&quot; -lt 0 ]; then
+    echo &quot;$NAME&quot; &gt;&gt; /opt/scores/failed.txt
+  fi
+done
+
+cat /opt/scores/scores.txt
+echo &quot;---&quot;
+cat /opt/scores/failed.txt</code></pre></div></details>
+<details class="expl"><summary>Erklärung anzeigen</summary><div><p><code>kubesec scan</code> gibt JSON zurück mit u.a. <code>score</code> (Integer). Positive Werte = guter Security-Posture, negative = problematisch. <code>jq &#x27;.[0].score&#x27;</code> extrahiert den Score aus dem ersten Result-Element.</p>
+<p>Im CI/CD typisch:</p>
+<pre><code>SCORE=$(kubesec scan manifest.yaml | jq &#x27;.[0].score&#x27;)
+if [ &quot;$SCORE&quot; -lt 5 ]; then
+  echo &quot;Manifest fails security threshold&quot;
+  exit 1
+fi</code></pre>
+<p><code>-lt</code> ist der numerische Vergleich in bash. Für Floats würde <code>bc</code> oder <code>awk</code> nötig sein, aber kubesec gibt ganze Zahlen.</p>
+<p>---</p></div></details>
+<h1>6. MONITORING, LOGGING, RUNTIME SECURITY (20%)</h1>
+
+<h2 id="ü61">Ü6.1 – Falco Rule: Crypto-Miner Detection</h2>
+<div class="meta"><strong>Instance:</strong> <code>ssh cks-prep1</code> | <strong>Namespace:</strong> <code>default</code> | <strong>Konzept:</strong> Behavioral Monitoring</div>
+<div class="task"><p>Crypto-Miner sind eine häufige Container-Bedrohung. Auf Node <code>cks-prep1</code>:</p>
+<ol>
+<li>Custom Rules-Datei <code>/etc/falco/rules.d/crypto-miner.yaml</code></li>
+<li>Rule 1:</li>
+<p>- Name: <code>Detect Crypto Mining Process</code>    - Condition: spawned_process in container, proc.name in (<code>xmrig</code>, <code>cryptonight</code>, <code>minerd</code>, <code>cgminer</code>)    - Output: time, user, container, image, command    - Priority: <code>CRITICAL</code>    - Source: <code>syscall</code></p>
+<li>Rule 2:</li>
+<p>- Name: <code>Detect Outbound Connection to Mining Pool</code>    - Condition: outbound connection, fd.sport in <code>mining_pool_ports</code> (3333, 4444, 14444, 14433, 5555)    - Output: time, user, container, dest IP, dest port    - Priority: <code>WARNING</code>    - Source: <code>syscall</code></p>
+<li>Eine Falco-Liste <code>mining_pool_ports</code> mit den o.g. Ports muss in derselben Datei definiert sein</li>
+<li>Falco neu starten</li>
+</ol></div>
+<details><summary>Lösung anzeigen</summary><div><p><strong><code>/etc/falco/rules.d/crypto-miner.yaml</code>:</strong></p>
+<pre><code>- list: mining_pool_ports
+  items: [3333, 4444, 14444, 14433, 5555]
+
+- rule: Detect Crypto Mining Process
+  desc: Detects known crypto miner binaries running in containers
+  condition: &gt;
+    spawned_process and container and
+    proc.name in (xmrig, cryptonight, minerd, cgminer)
+  output: &gt;
+    Crypto miner process detected
+    (time=%evt.time user=%user.name container=%container.name
+     image=%container.image.repository cmd=%proc.cmdline)
+  priority: CRITICAL
+  source: syscall
+
+- rule: Detect Outbound Connection to Mining Pool
+  desc: Detects outbound connections to well-known mining pool ports
+  condition: &gt;
+    outbound and container and
+    fd.sport in (mining_pool_ports)
+  output: &gt;
+    Possible mining pool connection
+    (time=%evt.time user=%user.name container=%container.name
+     dest_ip=%fd.rip dest_port=%fd.rport)
+  priority: WARNING
+  source: syscall</code></pre>
+<pre><code>sudo systemctl restart falco
+sudo systemctl status falco
+
+# Test (in einem beliebigen Pod)
+kubectl run miner-test --image=alpine -- sh -c &quot;sleep 60&quot;
+kubectl exec miner-test -- sh -c &quot;cp /bin/sleep /tmp/xmrig &amp;&amp; /tmp/xmrig 10&quot;
+
+# Falco-Logs prüfen
+sudo journalctl -u falco -n 50 | grep -i miner</code></pre></div></details>
+<details class="expl"><summary>Erklärung anzeigen</summary><div><p>Falco hat ein eingebautes Konzept namens <strong>lists</strong> – wiederverwendbare Mengen, die in <code>condition</code>/<code>output</code> referenziert werden. Vorteil: Wenn man später noch Mining-Ports hinzufügen will, nur die Liste editieren, nicht jede Rule.</p>
+<p><code>spawned_process</code>: Macro, das <code>evt.type=execve</code> bedeutet. <code>fd.sport</code>: Source-Port der Verbindung (bei Outbound ist das der ferne Port = Mining Pool). <code>%fd.rip</code> / <code>%fd.rport</code>: Remote IP/Port im Output.</p>
+<p>Falco-Rules werden top-down evaluiert, aber alle matchenden feuern (anders als z.B. iptables). Daher beide Rules können gleichzeitig auslösen.</p>
+<p>---</p></div></details>
+<h2 id="ü62">Ü6.2 – Audit Policy mit unterschiedlichen Levels</h2>
+<div class="meta"><strong>Instance:</strong> <code>ssh cks-prep2</code> | <strong>Namespace:</strong> <code>kube-system</code> | <strong>Konzept:</strong> Audit Logs</div>
+<div class="task"><p>Granulare Audit-Policy aufsetzen:</p>
+<ol>
+<li>Policy-Datei unter <code>/etc/kubernetes/audit/policy.yaml</code>:</li>
+<ul>
+<li><strong>Secrets in allen Namespaces:</strong> Level <code>RequestResponse</code> (kompletter Inhalt geloggt)</li>
+<li><strong>Pods im Namespace <code>kube-system</code>:</strong> Level <code>Metadata</code></li>
+<li><strong>Deployments im Namespace <code>prod</code>:</strong> Level <code>Request</code> (mit Request-Body, ohne Response)</li>
+<li><strong>Alle anderen Resources:</strong> Level <code>Metadata</code></li>
+<li><strong>Health-/Version-Endpoints (<code>/healthz*</code>, <code>/version</code>):</strong> komplett ignorieren (Level <code>None</code>)</li>
+<li>Omit <code>RequestReceived</code> stage</li>
+</ul>
+<li>kube-apiserver patchen mit:</li>
+<p>- <code>--audit-policy-file=/etc/kubernetes/audit/policy.yaml</code>    - <code>--audit-log-path=/var/log/kubernetes/audit.log</code>    - <code>--audit-log-maxsize=100</code> (MB)    - <code>--audit-log-maxbackup=5</code></p>
+<li>Volumes für Policy und Log-Directory</li>
+<li>Verifikation: Audit-Log existiert nach API-Server-Restart</li>
+</ol></div>
+<details><summary>Lösung anzeigen</summary><div><p><strong><code>/etc/kubernetes/audit/policy.yaml</code>:</strong></p>
+<pre><code>apiVersion: audit.k8s.io/v1
+kind: Policy
+omitStages:
+  - &quot;RequestReceived&quot;
+rules:
+  # 1) Health-Endpoints ignorieren
+  - level: None
+    nonResourceURLs:
+    - &quot;/healthz*&quot;
+    - &quot;/version&quot;
+
+  # 2) Secrets: voller Inhalt
+  - level: RequestResponse
+    resources:
+    - group: &quot;&quot;
+      resources: [&quot;secrets&quot;]
+
+  # 3) Pods in kube-system
+  - level: Metadata
+    namespaces: [&quot;kube-system&quot;]
+    resources:
+    - group: &quot;&quot;
+      resources: [&quot;pods&quot;]
+
+  # 4) Deployments in prod
+  - level: Request
+    namespaces: [&quot;prod&quot;]
+    resources:
+    - group: &quot;apps&quot;
+      resources: [&quot;deployments&quot;]
+
+  # 5) Catch-all
+  - level: Metadata</code></pre>
+<pre><code>sudo mkdir -p /etc/kubernetes/audit /var/log/kubernetes
+sudo cp /etc/kubernetes/manifests/kube-apiserver.yaml \
+        /root/kube-apiserver.yaml.bak
+
+sudo vi /etc/kubernetes/manifests/kube-apiserver.yaml</code></pre>
+<p><strong>Flags in <code>spec.containers[0].command</code>:</strong></p>
+<pre><code>    - --audit-policy-file=/etc/kubernetes/audit/policy.yaml
+    - --audit-log-path=/var/log/kubernetes/audit.log
+    - --audit-log-maxsize=100
+    - --audit-log-maxbackup=5</code></pre>
+<p><strong>volumeMounts:</strong></p>
+<pre><code>    - name: audit-policy
+      mountPath: /etc/kubernetes/audit
+      readOnly: true
+    - name: audit-log
+      mountPath: /var/log/kubernetes</code></pre>
+<p><strong>volumes:</strong></p>
+<pre><code>  - name: audit-policy
+    hostPath:
+      path: /etc/kubernetes/audit
+      type: DirectoryOrCreate
+  - name: audit-log
+    hostPath:
+      path: /var/log/kubernetes
+      type: DirectoryOrCreate</code></pre>
+<pre><code>sleep 30
+kubectl get pods -n kube-system | grep apiserver
+
+# Verifikation
+sudo ls -la /var/log/kubernetes/audit.log
+sudo tail -5 /var/log/kubernetes/audit.log</code></pre></div></details>
+<details class="expl"><summary>Erklärung anzeigen</summary><div><p>Audit-Rules werden in Reihenfolge ausgewertet, <strong>erste Match gewinnt</strong>. Daher:</p>
+<ul>
+<li><code>None</code>-Regeln für ignorierte Endpoints zuerst → kein Logging, kein Overhead</li>
+<li>Spezifische <code>RequestResponse</code>-Regeln für sensible Resources danach</li>
+<li>Catch-all am Ende</li>
+</ul>
+<p><code>nonResourceURLs</code>: für API-Endpoints, die keine Resources sind (z.B. <code>/healthz</code>, <code>/api</code>, <code>/version</code>). <code>omitStages: RequestReceived</code>: verhindert doppeltes Logging (Event tritt sowohl beim Receive als auch beim Response auf, ohne diese Option würden beide geloggt).</p>
+<p>Die Audit-Levels von wenig zu viel:</p>
+<ul>
+<li><code>None</code>: nichts</li>
+<li><code>Metadata</code>: Wer, wann, was (Resource-Typ + Name)</li>
+<li><code>Request</code>: zusätzlich der gesendete Body</li>
+<li><code>RequestResponse</code>: zusätzlich die Antwort</li>
+</ul>
+<p>---</p></div></details>
+<h2 id="ü63">Ü6.3 – Falco-Alerts nach Severity filtern</h2>
+<div class="meta"><strong>Instance:</strong> <code>ssh cks-prep1</code> | <strong>Namespace:</strong> <code>default</code> | <strong>Konzept:</strong> Falco Alert Analysis</div>
+<div class="task"><p>Falco schreibt Alerts nach <code>/var/log/falco/alerts.log</code> (JSON-Format, ein Event pro Zeile). Auf Node <code>cks-prep1</code>:</p>
+<ol>
+<li>Anzahl Alerts pro Priority-Level zählen</li>
+<li>Ergebnis nach <code>/opt/falco-analysis/priority-counts.txt</code> mit Format:</li>
+<p>``<code>    Critical: &lt;count&gt;    Error: &lt;count&gt;    Warning: &lt;count&gt;    Notice: &lt;count&gt;    Informational: &lt;count&gt;    </code>``</p>
+<li>Alle Critical-Alerts der letzten Stunde extrahieren → <code>/opt/falco-analysis/critical-recent.log</code></li>
+<li>Die Top-3 Container, die am häufigsten in Critical-Alerts vorkommen, listen → <code>/opt/falco-analysis/top-containers.txt</code> mit Format <code>&lt;count&gt; &lt;container.name&gt;</code></li>
+</ol></div>
+<details><summary>Lösung anzeigen</summary><div><pre><code>mkdir -p /opt/falco-analysis
+
+# 1+2) Count pro Priority
+&gt; /opt/falco-analysis/priority-counts.txt
+for prio in Critical Error Warning Notice Informational; do
+  COUNT=$(jq -r &quot;select(.priority == \&quot;$prio\&quot;) | .priority&quot; \
+          /var/log/falco/alerts.log 2&gt;/dev/null | wc -l)
+  echo &quot;$prio: $COUNT&quot; &gt;&gt; /opt/falco-analysis/priority-counts.txt
+done
+
+cat /opt/falco-analysis/priority-counts.txt
+
+# 3) Critical der letzten Stunde
+# Datum vor 1h berechnen in ISO Format
+ONE_HOUR_AGO=$(date -u -d &#x27;1 hour ago&#x27; +%Y-%m-%dT%H:%M:%S)
+
+jq -c &quot;select(.priority == \&quot;Critical\&quot;) | select(.time &gt; \&quot;$ONE_HOUR_AGO\&quot;)&quot; \
+  /var/log/falco/alerts.log \
+  &gt; /opt/falco-analysis/critical-recent.log
+
+wc -l /opt/falco-analysis/critical-recent.log
+
+# 4) Top-3 Container in Critical-Alerts (insgesamt)
+jq -r &#x27;select(.priority == &quot;Critical&quot;) | .output_fields[&quot;container.name&quot;]&#x27; \
+  /var/log/falco/alerts.log \
+  | sort | uniq -c | sort -rn | head -3 \
+  &gt; /opt/falco-analysis/top-containers.txt
+
+cat /opt/falco-analysis/top-containers.txt</code></pre></div></details>
+<details class="expl"><summary>Erklärung anzeigen</summary><div><p>Falco im JSON-Output-Modus liefert eine JSON-Zeile pro Event mit Feldern wie <code>priority</code>, <code>time</code>, <code>output</code>, <code>output_fields</code>. <code>jq -c</code> für compact JSON-Output (eine Zeile pro Match). <code>jq -r</code> für raw strings (ohne Quotes).</p>
+<p><code>sort | uniq -c | sort -rn</code>: klassisches Unix-Pattern für &quot;Top N&quot;:</p>
+<ul>
+<li><code>sort</code>: alphabetisch sortieren (damit uniq funktioniert)</li>
+<li><code>uniq -c</code>: doppelte Zeilen zählen</li>
+<li><code>sort -rn</code>: numerisch reverse (höchste zuerst)</li>
+<li><code>head -3</code>: Top 3</li>
+</ul>
+<p><code>date -u -d &#x27;1 hour ago&#x27; +%Y-%m-%dT%H:%M:%S</code>: UTC-Zeitstempel im ISO-8601-Format, exakt wie Falco ihn ausgibt.</p>
+<p>---</p></div></details>
+<h2 id="ü64">Ü6.4 – Container Immutability für mehrere Deployments</h2>
+<div class="meta"><strong>Instance:</strong> <code>ssh cks-prep1</code> | <strong>Namespace:</strong> <code>prod-services</code> | <strong>Konzept:</strong> Runtime Immutability</div>
+<div class="task"><p>Im Namespace <code>prod-services</code> existieren mehrere Deployments. Alle sollen <code>readOnlyRootFilesystem: true</code> haben:</p>
+<ol>
+<li>Alle Deployments in <code>prod-services</code> listen</li>
+<li>Pro Deployment prüfen, ob es <code>readOnlyRootFilesystem: true</code> hat</li>
+<li>Deployments OHNE diese Einstellung → <code>/opt/immutability/missing.txt</code> (eine pro Zeile)</li>
+<li>Alle Deployments aus <code>missing.txt</code> mit folgendem Patch versehen:</li>
+<p>- <code>readOnlyRootFilesystem: true</code>    - emptyDir-Volume <code>tmp</code> auf <code>/tmp</code></p>
+<li>Verifizieren: Nach Rollout sollten alle Deployments den Setting haben → <code>/opt/immutability/verified.txt</code></li>
+</ol></div>
+<details><summary>Lösung anzeigen</summary><div><pre><code>mkdir -p /opt/immutability
+
+# 1+2+3) Deployments ohne readOnlyRootFilesystem finden
+kubectl get deployments -n prod-services -o json | jq -r &#x27;
+  .items[] |
+  select(
+    [.spec.template.spec.containers[].securityContext.readOnlyRootFilesystem]
+    | all(. != true)
+  ) | .metadata.name
+&#x27; &gt; /opt/immutability/missing.txt
+
+cat /opt/immutability/missing.txt
+
+# 4) Patch
+while read -r DEP; do
+  [ -z &quot;$DEP&quot; ] &amp;&amp; continue
+  echo &quot;Patching $DEP...&quot;
+  kubectl patch deployment &quot;$DEP&quot; -n prod-services --type=strategic -p &#x27;
+spec:
+  template:
+    spec:
+      containers:
+      - name: &#x27;&quot;$(kubectl get deployment &quot;$DEP&quot; -n prod-services -o jsonpath=&#x27;{.spec.template.spec.containers[0].name}&#x27;)&quot;&#x27;
+        securityContext:
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: tmp
+        emptyDir: {}
+&#x27;
+done &lt; /opt/immutability/missing.txt
+
+# Rollouts abwarten
+for DEP in $(cat /opt/immutability/missing.txt); do
+  kubectl rollout status deployment/&quot;$DEP&quot; -n prod-services --timeout=60s
+done
+
+# 5) Verifikation
+kubectl get deployments -n prod-services -o json | jq -r &#x27;
+  .items[] |
+  &quot;\(.metadata.name): readOnly=\(.spec.template.spec.containers[0].securityContext.readOnlyRootFilesystem)&quot;
+&#x27; &gt; /opt/immutability/verified.txt
+
+cat /opt/immutability/verified.txt</code></pre></div></details>
+<details class="expl"><summary>Erklärung anzeigen</summary><div><p>Komplexe jq-Query: Für jeden Container prüfen, ob <code>readOnlyRootFilesystem</code> <code>true</code> ist; nur wenn KEINER der Container es hat, das Deployment listen. <code>all(. != true)</code> ist wahr wenn alle Elemente nicht-true sind.</p>
+<p>Bash-Trick <code>&#x27;&quot;$(...)&quot;&#x27;</code>: Mit Single-Quote starten, kurz auf Double-Quote wechseln um Variable zu expanden, dann wieder Single-Quote. Nötig weil das YAML viele <code>$</code> und <code>:</code> enthält, die in Double-Quotes problematisch wären.</p>
+<p>In Production-Pipelines macht man das eher mit Kyverno/OPA-Policies, die das automatisch enforcen.</p>
+<p>---</p></div></details>
+<h2 id="ü65">Ü6.5 – Pods mit privilegierten Mounts identifizieren</h2>
+<div class="meta"><strong>Instance:</strong> <code>ssh cks-prep1</code> | <strong>Namespace:</strong> <code>default</code> | <strong>Konzept:</strong> Security Posture, Threat Investigation</div>
+<div class="task"><p>Cluster-weiter Security-Check: Welche Pods mounten gefährliche Host-Pfade?</p>
+<ol>
+<li>Alle Pods cluster-weit nach <code>hostPath</code> Volumes durchsuchen</li>
+<li>Gefährliche Pfade: <code>/</code>, <code>/etc</code>, <code>/var/run/docker.sock</code>, <code>/proc</code>, <code>/var/lib/kubelet</code>, <code>/dev</code></li>
+<li>Ergebnis-CSV nach <code>/opt/posture/dangerous-mounts.csv</code> mit Format:</li>
+<p>``<code>    namespace,pod,volume_name,host_path    </code>``</p>
+<li>Pods, die <code>/var/run/docker.sock</code> mounten → <code>/opt/posture/docker-sock-pods.txt</code> (eine pro Zeile, Format <code>&lt;namespace&gt;/&lt;pod&gt;</code>)</li>
+</ol></div>
+<details><summary>Lösung anzeigen</summary><div><pre><code>mkdir -p /opt/posture
+
+# 1+2+3) Alle gefährlichen hostPath-Mounts cluster-weit
+echo &quot;namespace,pod,volume_name,host_path&quot; &gt; /opt/posture/dangerous-mounts.csv
+
+kubectl get pods --all-namespaces -o json | jq -r &#x27;
+  .items[] |
+  .metadata.namespace as $ns |
+  .metadata.name as $pod |
+  .spec.volumes[]? |
+  select(.hostPath) |
+  select(
+    .hostPath.path == &quot;/&quot; or
+    .hostPath.path == &quot;/etc&quot; or
+    .hostPath.path == &quot;/var/run/docker.sock&quot; or
+    .hostPath.path == &quot;/proc&quot; or
+    .hostPath.path == &quot;/var/lib/kubelet&quot; or
+    .hostPath.path == &quot;/dev&quot;
+  ) |
+  &quot;\($ns),\($pod),\(.name),\(.hostPath.path)&quot;
+&#x27; &gt;&gt; /opt/posture/dangerous-mounts.csv
+
+cat /opt/posture/dangerous-mounts.csv
+
+# 4) Nur Pods mit docker.sock
+kubectl get pods --all-namespaces -o json | jq -r &#x27;
+  .items[] |
+  .metadata.namespace as $ns |
+  .metadata.name as $pod |
+  select(
+    .spec.volumes[]?.hostPath?.path == &quot;/var/run/docker.sock&quot;
+  ) |
+  &quot;\($ns)/\($pod)&quot;
+&#x27; | sort -u &gt; /opt/posture/docker-sock-pods.txt
+
+cat /opt/posture/docker-sock-pods.txt</code></pre></div></details>
+<details class="expl"><summary>Erklärung anzeigen</summary><div><p>Variable-Binding in jq mit <code>as $var</code>: speichert einen Wert um ihn später in tieferen Iterationen wieder zu verwenden. Notwendig, weil <code>.spec.volumes[]</code> einen Kontext öffnet, in dem <code>.metadata.namespace</code> nicht mehr direkt sichtbar ist.</p>
+<p><code>hostPath</code> Volumes mounten Host-Verzeichnisse in den Container. Gefährlich weil:</p>
+<ul>
+<li><code>/</code> oder <code>/etc</code>: kompletter Host-Zugriff</li>
+<li><code>/var/run/docker.sock</code>: Container-Escape (siehe S2-Q4)</li>
+<li><code>/proc</code>: Kernel-Manipulation möglich</li>
+<li><code>/var/lib/kubelet</code>: andere Pods&#x27; Geheimnisse</li>
+<li><code>/dev</code>: Direkter Hardware-Zugriff</li>
+</ul>
+<p>Im echten Pentest sind das die ersten Suchziele. Mit dieser Aufgabe lernt man, sie systematisch zu finden.</p></div></details>
+</body></html>
